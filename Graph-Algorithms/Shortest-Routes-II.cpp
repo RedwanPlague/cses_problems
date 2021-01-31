@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
@@ -15,31 +16,34 @@ typedef pair<ll,int> pli;
 
 const ll INF = (1LL << 60);
 
-vector<vector<pli>> adj; // store as {w, v}
-ll dist[MX][MX];
+ll adj[MX][MX], dist[MX][MX];
 
-void diajkstra (int src) {
-    ll *d = dist[src];
-    fill(d, d+MX, INF);
-    d[src] = 0;
-    priority_queue<pli, vector<pli>, greater<pli>> pq;
-    pq.push({0, src});
-    while(!pq.empty()) {
-        pli e = pq.top();
-        pq.pop();
-        ll du = e.F;
-        int u = e.S;
-        if (du == d[u]) {
-            for (auto &p: adj[u]) {
-                ll w = p.F;
-                int v = p.S;
-                if (w + d[u] < d[v]) {
-                    d[v] = w + d[u];
-                    pq.push({d[v], v});
-                }
+void initialize (int n) {
+    for (int i=0; i<n; i++) {
+        fill(dist[i], dist[i] + n, INF);
+        dist[i][i] = 0;
+    }
+}
+
+void floyd_warshall (int n) {
+    for (int k=0; k<n; k++) {
+        for (int i=0; i<n; i++) {
+            for (int j=0; j<n; j++) {
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
             }
         }
     }
+}
+
+void print_dist (int n) {
+    cerr << "\ndist: \n";
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            cerr << (dist[i][j] == INF ? -1 : dist[i][j]) << ' ';
+        }
+        cerr << '\n';
+    }
+    cerr << '\n';
 }
 
 int main () {
@@ -48,25 +52,20 @@ int main () {
     int n, m, q;
     cin >> n >> m >> q;
 
-    adj.resize(n);
+    initialize(n);
+    /* print_dist(n); */
+
     for (int i=0; i<m; i++) {
-        int u, v, w;
+        int u, v;
+        ll w;
         cin >> u >> v >> w;
         u--; v--;
-        adj[u].push_back({w, v});
-        adj[v].push_back({w, u});
+        dist[u][v] = dist[v][u] = min(w, dist[u][v]);
     }
 
-    for (int i=0; i<n; i++) {
-        diajkstra(i);
-    }
-
-    /* for (int i=0; i<n; i++) { */
-    /*     for (int j=0; j<n; j++) { */
-    /*         cout << dist[i][j] << ' '; */
-    /*     } */
-    /*     cout << '\n'; */
-    /* } */
+    /* print_dist(n); */
+    floyd_warshall(n);
+    /* print_dist(n); */
 
     while (q--) {
         int a, b;
