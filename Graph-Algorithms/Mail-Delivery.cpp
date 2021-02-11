@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stack>
 #include <set>
 
 using namespace std;
@@ -16,23 +17,21 @@ bool all_even () {
     return true;
 }
 
-vector<int> path;
+stack<int> path;
 
 void make_path (int u) {
-    path.push_back(u);
 
-    if (adj[u].empty()) return;
+    while (!adj[u].empty()) {
+        auto it = adj[u].begin();
+        int v = *it;
 
-    auto it = adj[u].begin();
-    if (*it == 1 && (int)adj[u].size() > 1) {
-        it++;
+        adj[u].erase(it);
+        adj[v].erase(u);
+
+        make_path(v);
     }
 
-    int v = *it;
-    adj[u].erase(it);
-    adj[v].erase(u);
-
-    make_path(v);
+    path.push(u);
 }
 
 int main () {
@@ -61,8 +60,9 @@ int main () {
 
         if ((int)path.size() == m+1) {
             ok = true;
-            for (auto x: path) {
-                cout << x << ' ';
+            while (!path.empty()) {
+                cout << path.top() << ' ';
+                path.pop();
             }
             cout << endl;
         }
