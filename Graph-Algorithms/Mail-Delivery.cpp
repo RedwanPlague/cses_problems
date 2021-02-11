@@ -2,29 +2,37 @@
 
 #include <iostream>
 #include <vector>
-#include <deque>
+#include <set>
 
 using namespace std;
 
-vector<deque<int>> adj;
+vector<set<int>> adj;
 vector<bool> vis;
-
-int dfs (int u) {
-    vis[u] = true;
-    int count = 1;
-    for (auto v: adj[u]) {
-        if (!vis[v]) {
-            count += dfs(v);
-        }
-    }
-    return count;
-}
 
 bool all_even () {
     for (auto &v: adj) {
         if (v.size() & 1) return false;
     }
     return true;
+}
+
+vector<int> path;
+
+void make_path (int u) {
+    path.push_back(u);
+
+    if (adj[u].empty()) return;
+
+    auto it = adj[u].begin();
+    if (*it == 1 && (int)adj[u].size() > 1) {
+        it++;
+    }
+
+    int v = *it;
+    adj[u].erase(it);
+    adj[v].erase(u);
+
+    make_path(v);
 }
 
 int main () {
@@ -42,15 +50,26 @@ int main () {
     for (int i=0; i<m; i++) {
         int u, v;
         cin >> u >> v;
-        adj[u].push_back(v);
-        adj[v].push_back(u);
+        adj[u].insert(v);
+        adj[v].insert(u);
     }
 
-    if (dfs(1) == n && all_even()) {
+    bool ok = false;
 
+    if (all_even()) {
+        make_path(1);
+
+        if ((int)path.size() == m+1) {
+            ok = true;
+            for (auto x: path) {
+                cout << x << ' ';
+            }
+            cout << endl;
+        }
     }
-    else {
 
+    if (!ok) {
+        cout << "IMPOSSIBLE" << endl;
     }
 
     return 0;
