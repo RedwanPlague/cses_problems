@@ -8,7 +8,6 @@
 using namespace std;
 
 vector<set<int>> adj;
-vector<bool> vis;
 
 bool all_even () {
     for (auto &v: adj) {
@@ -44,7 +43,6 @@ int main () {
     cin >> n >> m;
 
     adj.resize(n+1);
-    vis.resize(n+1);
 
     for (int i=0; i<m; i++) {
         int u, v;
