@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <cstring>
 
 using namespace std;
@@ -8,20 +9,24 @@ using namespace std;
 
 int n;
 int g[MX][MX];
+vector<int> radj[MX];
 
-// first state = mask of which nodes i have visited so far, including current
-// second state = which node i am currently at
+// first state = mask of which nodes I have visited so far, including current
+// second state = which node I am currently at
 int dp[1 << MX][MX];
 
 int ways (const int mask, const int u) {
     if (dp[mask][u] != -1) return dp[mask][u];
 
+    // optimization, if 0 is unvisited, we don't want this path anyways cause it didn't start at 0
+    if (!(mask&1)) return 0;
+
     int ret = 0;
-    for (int i=0; i<n; i++) {
-        if ((mask & (1 << i)) && g[i][u]) {
-            // go back the i -> u edge.
-            // last node is now i, u is now unvisited
-            ret = (ret + (long long)g[i][u] * ways(mask ^ (1 << u), i) % MOD) % MOD;
+    for (auto v: radj[u]) {
+        if (mask & (1 << v)) {
+            // go back the v -> u edge.
+            // last node is now v, u is now unvisited
+            ret = (ret + (long long)g[v][u] * ways(mask^ (1 << u), v) % MOD) % MOD;
         }
     }
     return (dp[mask][u] = ret);
@@ -42,6 +47,14 @@ int main () {
         u--; v--;
         if (u != v) { // no point of keeping self loops
             g[u][v]++;
+        }
+    }
+
+    for (int i=0; i<n; i++) {
+        for (int j=0; j<n; j++) {
+            if (g[i][j]) {
+                radj[j].push_back(i);
+            }
         }
     }
 
