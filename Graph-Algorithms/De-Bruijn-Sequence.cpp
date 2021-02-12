@@ -1,64 +1,68 @@
 // https://cses.fi/problemset/task/1692/
 
+// to generate for n bits, think of each node as the last (n-1) bits for each substring.
+// then edges will contain '0' or '1'
+// for example, n = 3
+// nodes are = 00, 01, 10, 11
+// edges are =
+// 00 --0--> 00
+// 00 --1--> 01
+// 01 --0--> 10
+// 01 --1--> 11
+// 10 --0--> 00
+// 10 --1--> 01
+// 11 --0--> 10
+// 11 --1--> 11
+// taking (01 --1--> 11) edge at 001 will get us to 0011
+// taking (11 --0--> 10) edge at 0011 will get us to 00110
+// Now, find the Euler path, and we have a De-Bruijn Sequence
+
 #include <iostream>
-#include <vector>
-#include <stack>
-#include <set>
+#include <string>
 
 using namespace std;
 
-#define add(u, d) (((u<<1) & ((1<<n)-1)) + d)
+#define add(u, d) (((u << 1) & mask) + d)
 
-int n;
-vector<stack<int>> adj;
+const int MX = 1 << 14; // will work for n <= 15
 
+// all unused at first
+char used[MX][2];
+
+int mask;
 string seq;
 
 void make_path (int u) {
-    while (!adj[u].empty()) {
-        int v = adj[u].top();
-        adj[u].pop();
-        make_path(v);
+    for (int i=0; i<=1; i++) {
+        if (!used[u][i]) {
+            used[u][i] = 1;
+            make_path(add(u, i));
+        }
     }
-    path.push(u);
+    seq += char((u&1) + '0');
 }
 
 int main () {
     ios_base::sync_with_stdio(false); cin.tie(nullptr);
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-#endif
 
-    cin >> n >> m;
+    int n;
+    cin >> n;
 
-    adj.resize(n+1);
-    indeg.resize(n+1);
-
-    for (int i=0; i<m; i++) {
-        int u, v;
-        cin >> u >> v;
-        adj[u].push(v);
-        indeg[v]++;
+    if (n == 1) {
+        cout << "01" << endl;
+        return 0;
     }
 
-    bool ok = false;
+    mask = (1 << (n - 1)) - 1;
 
-    if (possible(1, n)) {
-        make_path(1);
+    make_path(0);
 
-        if ((int)path.size() == m+1) {
-            ok = true;
-            while (!path.empty()) {
-                cout << path.top() << ' ';
-                path.pop();
-            }
-            cout << endl;
-        }
-    }
+    // don't prepend infront, because sequence is created in reversed order. so add '0' at the end
+    seq.append(n-2, '0');
 
-    if (!ok) {
-        cout << "IMPOSSIBLE" << endl;
-    }
+    // the sequence should be reversed to get the one that was actually discovered
+    // but the unreversed one is also valid, so why waste CPU time
+    cout << seq << endl;
 
     return 0;
 }
