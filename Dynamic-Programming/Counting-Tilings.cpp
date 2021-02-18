@@ -27,21 +27,9 @@ struct ModInt {
         return nval;
     }
 
-    inline ModInt operator - (const ModInt &mi) const {
-        int nval = val - mi.val;
-        if (nval < 0) nval += MOD;
-        return nval;
-    }
-
     inline ModInt operator += (const ModInt &mi) {
         val += mi.val;
         if (val >= MOD) val -= MOD;
-        return *this;
-    }
-
-    inline ModInt operator -= (const ModInt &mi) {
-        val -= mi.val;
-        if (val < 0) val += MOD;
         return *this;
     }
 };
@@ -67,10 +55,10 @@ int main () {
         for (int j=0; j<m; j++) {
             for (int mask=0; mask<=all; mask++) {
                 cur[mask][0] = cur[mask][1] = prv[mask^all];
-                for (int i=2; i<=n; i++) {
+                for (int i=2, use=0b11; i<=n; i++, use<<=1) {
                     cur[mask][i] = cur[mask][i-1];
-                    if (isset(mask, i-1) && isset(mask, i-2)) {
-                        cur[mask][i] += cur[mask^(0b11 << (i-2))][i];
+                    if ((mask & use) == use) {
+                        cur[mask][i] += cur[mask^use][i];
                     }
                 }
             }
