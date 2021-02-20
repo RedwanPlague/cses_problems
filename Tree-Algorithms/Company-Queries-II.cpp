@@ -16,13 +16,11 @@ vector<vector<int>> adj;
 int tin[N], tout[N], timer;
 int par[N][LGN];
 
-int dfs (const int u, const int p, const int level) {
+int dfs (const int u, const int level) {
     tin[u] = timer++;
     int max_lvl = level;
     for (auto v: adj[u]) {
-        if (v != p) {
-            max_lvl = max(max_lvl, dfs(v, u, 1 + level));
-        }
+        max_lvl = max(max_lvl, dfs(v, 1 + level));
     }
     tout[u] = timer++;
     return max_lvl;
@@ -63,10 +61,9 @@ int main () {
         cin >> p;
         par[i][0] = p;
         adj[p].push_back(i);
-        adj[i].push_back(p);
     }
 
-    lgn = log2(dfs(1, 1, 0));
+    lgn = log2(dfs(1, 0));
 
     for (int j=1; j<=lgn; j++) {
         for (int i=1; i<=n; i++) {
