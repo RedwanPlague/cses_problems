@@ -1,49 +1,49 @@
+// https://cses.fi/problemset/task/1139
+
 #include <iostream>
-#include <cstring>
+#include <vector>
 
 using namespace std;
 
-#define N 1000
+#define all(v) (v).begin(), (v).end()
 
-typedef long long ll;
+vector<vector<int>> adj;
 
-ll tree[4*N];
-
-int build (int cur, int l, int r) {
-    if (l == r) {
-        tree[cur] = 1;
-        return cur;
+void dfs(int u, int p) {
+    for (auto v : adj[u]) {
+        if (v != p) {
+            dfs(v, u);
+        }
     }
-
-    int mid = (l+r)/2;
-    int left = 2*cur+1;
-    int right = left+1;
-
-    int ret1 = build(left, l, mid);
-    int ret2 = build(right, mid+1, r);
-
-    tree[cur] = tree[left] + tree[right];
-
-    return max(ret1, ret2);
 }
 
-int main () {
-    ios_base::sync_with_stdio(false); cin.tie(nullptr);
-#ifndef ONLINE_JUDGE
-    /* freopen("input.txt", "r", stdin); */
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+#ifdef REDWAN
+    freopen("test_input.txt", "r", stdin);
 #endif
 
     int n;
-    while (cin >> n) {
-        memset(tree, 0, sizeof(tree));
-        int lim = build(1, 1, n);
-        cout << lim << "(" << 2*n-1 << ") -> ";
-        for (int i=1; i<=lim; i++) {
-            cout << tree[i] << ' ';
-        }
-        cout << endl;
+    cin >> n;
+
+    adj.resize(n);
+
+    for (int i = 0; i < n; i++) {
+        int a;
+        cin >> a;
     }
+
+    for (int i = 1; i < n; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--;
+        v--;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    dfs(0, 0);
 
     return 0;
 }
-
