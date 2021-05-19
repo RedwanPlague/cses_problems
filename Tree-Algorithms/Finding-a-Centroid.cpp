@@ -23,11 +23,11 @@ void dfs(int u, int p) {
     }
 }
 
-int centroid_finder(int u, int p) {
+int centroid_finder(int u, int p, int root) {
     for (auto v : adj[u]) {
         if (v != p) {
-            if (sz[v] > (int)adj.size() / 2) {
-                return centroid_finder(v, u);
+            if (sz[v] > sz[root] / 2) {
+                return centroid_finder(v, u, root);
             }
         }
     }
@@ -50,14 +50,13 @@ int main() {
     for (int i = 1; i < n; i++) {
         int u, v;
         cin >> u >> v;
-        u--;
-        v--;
+        u--, v--;
         adj[u].push_back(v);
         adj[v].push_back(u);
     }
 
     dfs(0, -1);
-    cout << centroid_finder(0, -1) + 1 << endl;
+    cout << centroid_finder(0, -1, 0) + 1 << endl;
 
     return 0;
 }
