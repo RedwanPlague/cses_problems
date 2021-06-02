@@ -119,12 +119,12 @@ int main() {
         adj[v].push_back(u);
     }
 
-    memset(cnt, 0, sizeof(cnt));
-    memset(subcnt, 0, sizeof(subcnt));
+    memset(cnt, 0, n * sizeof(int));
+    memset(subcnt, 0, n * sizeof(int));
 
     ans = 0;
     if (k1 > 1) {
-        memset(on, true, sizeof(on));
+        memset(on, true, n * sizeof(bool));
         k = k1 - 1;
         getsz(0, -1);
         centroid_finder(0, -1, 0);
@@ -132,7 +132,7 @@ int main() {
     ll ans1 = ans;
 
     ans = 0;
-    memset(on, true, sizeof(on));
+    memset(on, true, n * sizeof(bool));
     k = k2;
     getsz(0, -1);
     centroid_finder(0, -1, 0);
